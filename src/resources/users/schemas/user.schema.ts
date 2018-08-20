@@ -8,17 +8,19 @@ export class User {
 
   version?: number;
 
+  hashedRt?: string;
+
   @Transform(({ value }) => {
-    let n = +value 
+    let n = +value;
     const r = n.toString().substring(0, n.toString().length - 1);
-    return +r
+    return +r;
   })
   createdAt?: Date;
 
   @Transform(({ value }) => {
-    let n = +value 
+    let n = +value;
     const r = n.toString().substring(0, n.toString().length - 1);
-    return +r
+    return +r;
   })
   updatedAt?: Date;
 

@@ -33,7 +33,9 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
-      return this.usersService.findOneById(id).catch(()=>{throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);});
+    return this.usersService.findOneById(id).catch(() => {
+      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
+    });
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

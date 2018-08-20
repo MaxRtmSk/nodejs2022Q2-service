@@ -14,10 +14,12 @@ model User {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
   password String
   login String
-  
+
+
   version Int
-  createdAt        DateTime           @default(now())
+  hashedRt String?
   updatedAt DateTime @updatedAt
+  createdAt        DateTime           @default(now())
 }
 
 model Artist {
