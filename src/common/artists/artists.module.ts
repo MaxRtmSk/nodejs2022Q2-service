@@ -7,5 +7,6 @@ import { Module } from '@nestjs/common';
   imports: [],
   controllers: [ArtistsController],
   providers: [ArtistsService],
+  exports: [ArtistsService],
 })
 export class ArtistsModule {}

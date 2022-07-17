@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { favorites } from '../favorites/favorites.service';
 import { CreateTrackDto } from './dto/createTrack.dto';
 import { UpdateTrackDto } from './dto/updateTrack.dto';
 import { Track } from './schemas/track.schema';
 
-let tracks: Track[] = [];
+export let tracks: Track[] = [];
 
 @Injectable()
 export class TracksService {
@@ -55,5 +56,7 @@ export class TracksService {
     tracks = tracks.filter((track) => {
       return track.id != id;
     });
+
+    favorites.tracks = favorites.tracks.filter((trackId) => trackId != id);
   }
 }

@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { favorites } from '../favorites/favorites.service';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { UpdateAlbumDto } from './dto/updateAlbum.dto';
 import { Album } from './schemas/album.schema';
 
-let albums: Album[] = [];
+export let albums: Album[] = [];
 
 @Injectable()
 export class AlbumsService {
@@ -55,5 +56,7 @@ export class AlbumsService {
     albums = albums.filter((album) => {
       return album.id != id;
     });
+
+    favorites.albums = favorites.albums.filter((albumId) => albumId != id);
   }
 }
