@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { favorites } from '../favorites/favorites.service';
+import { TracksService } from '../tracks/tracks.service';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { UpdateAlbumDto } from './dto/updateAlbum.dto';
 import { Album } from './schemas/album.schema';
@@ -9,6 +10,9 @@ export let albums: Album[] = [];
 
 @Injectable()
 export class AlbumsService {
+  @Inject(TracksService)
+  private tracksService: TracksService;
+
   async findAll(): Promise<Album[]> {
     return albums;
   }
@@ -58,5 +62,21 @@ export class AlbumsService {
     });
 
     favorites.albums = favorites.albums.filter((albumId) => albumId != id);
+    await this.tracksService.removeAlbum(id);
+  }
+
+  async removeArtist(id: string): Promise<void> {
+    albums = await Promise.all(
+      albums.map(async (album) => {
+        if (album.artistId === id) {
+          return {
+            ...album,
+            artistId: null,
+          };
+        } else {
+          return album;
+        }
+      }),
+    );
   }
 }

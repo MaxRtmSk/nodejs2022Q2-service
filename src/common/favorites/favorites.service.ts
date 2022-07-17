@@ -28,8 +28,6 @@ export class FavoritesService {
   private readonly artistsService: ArtistsService;
 
   async getFavorites(): Promise<FavoritesRepsonse> {
-    console.log(favorites);
-
     const artists = await Promise.all(
       favorites.artists.map(async (artistId) => {
         const artist = await this.artistsService.findOneById(artistId);
@@ -70,7 +68,6 @@ export class FavoritesService {
   }
 
   async removeTrack(id: string): Promise<void> {
-    console.log(favorites.tracks.includes(id));
     if (!favorites.tracks.includes(id)) {
       throw new HttpException(
         `Track ${id} doesn't exist in favorites`,

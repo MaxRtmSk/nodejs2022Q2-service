@@ -59,4 +59,32 @@ export class TracksService {
 
     favorites.tracks = favorites.tracks.filter((trackId) => trackId != id);
   }
+
+  async removeArtist(id: string): Promise<void> {
+    tracks = await Promise.all(
+      tracks.map(async (track) => {
+        if (track.artistId === id) {
+          return {
+            ...track,
+            artistId: null,
+          };
+        } else {
+          return track;
+        }
+      }),
+    );
+    console.log('remove artist tracks', id, tracks);
+  }
+
+  async removeAlbum(id: string): Promise<void> {
+    tracks = await Promise.all(
+      tracks.map(async (track) => {
+        return {
+          ...track,
+          albumId: track.albumId === id ? null : track.albumId,
+        };
+      }),
+    );
+    console.log('remove album tracks', id, tracks);
+  }
 }
