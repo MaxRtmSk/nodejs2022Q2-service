@@ -1,62 +1,58 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../schemas/user.schema';
-import { Model } from 'mongoose';
-import { RegisterDto } from '../dto/register.dto';
-import * as bcrypt from 'bcrypt';
-import { LoginDto } from '../dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { User } from '../schemas/user.schema';
 
+import { CreateUserDto } from '../dto/createUser.dto';
+import { UpdateUserDto } from '../dto/updateUser.dto';
+
+let users: User[] = [];
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
-        private jwtService: JwtService,
-    ) {}
+  async findAll(): Promise<User[]> {
+    return users;
+  }
 
-    async create(registerDto: RegisterDto): Promise<User> {
-        const newUser = {
-            ...registerDto,
-            password: await bcrypt.hash(registerDto.password, 10),
-        };
-        const createdCat = new this.userModel(newUser);
-        return createdCat.save();
+  async findOneById(id: string): Promise<User> {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const new_user: User = new User({
+      id: randomUUID(),
+      ...createUserDto,
+      version: 1,
+      createdAt: +Date.now(),
+      updatedAt: +Date.now(),
+    });
+    users.push(new_user);
+    return new_user;
+  }
+
+  async update(updateUserDto: UpdateUserDto, id: string): Promise<User> {
+    const findIndexUser = users.findIndex((user) => user.id === id);
+    if (findIndexUser < 0) {
+      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
     }
 
-    async findOneById(id): Promise<User> {
-        return this.userModel.findById(id).exec();
+    if (users[findIndexUser].password === updateUserDto.oldPassword) {
+      users[findIndexUser].password = updateUserDto.newPassword;
+      users[findIndexUser].updatedAt = +Date.now();
+      ++users[findIndexUser].version;
+      const user = await this.findOneById(id);
+      return user;
+    } else {
+      throw new HttpException(`oldPassowrd is wrong`, HttpStatus.FORBIDDEN);
     }
+  }
 
-    async login(loginDto: LoginDto): Promise<{ jwt: string }> {
-        const user = await this.userModel
-            .findOne({
-                email: loginDto.email,
-            })
-            .exec();
-
-        if (user) {
-            const match = bcrypt.compare(loginDto.password, user.password);
-            if (match) {
-                return {
-                    jwt: await this.jwtService.sign(
-                        {
-                            _id: user._id,
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            email: user.email,
-                        },
-                        {
-                            secret: process.env.SECRET,
-                        },
-                    ),
-                };
-            }
-        }
-    }
-
-    async verify(token) {
-        return this.jwtService.verifyAsync(token, {
-            secret: process.env.SECRET,
-        });
-    }
+  async delete(id: string): Promise<void> {
+    await this.findOneById(id);
+    users = users.filter(function (user) {
+      return user.id != id;
+    });
+  }
 }
