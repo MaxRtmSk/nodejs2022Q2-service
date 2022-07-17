@@ -15,7 +15,10 @@ export class TracksService {
   async findOneById(id: string): Promise<Track> {
     const track = tracks.find((track) => track.id === id);
     if (!track) {
-      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `Track ${id} doesn't exist`,
+        HttpStatus.NOT_FOUND,
+      );
     }
     return track;
   }
