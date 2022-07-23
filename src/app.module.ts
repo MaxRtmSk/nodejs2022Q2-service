@@ -1,10 +1,10 @@
-import { FavoritesModule } from './common/favorites/favorites.module';
-import { AlbumsModule } from './common/albums/albums.module';
-import { ArtistsModule } from './common/artists/artists.module';
-import { TracksModule } from './common/tracks/tracks.module';
+import { FavoritesModule } from './resources/favorites/favorites.module';
+import { AlbumsModule } from './resources/albums/albums.module';
+import { ArtistsModule } from './resources/artists/artists.module';
+import { TracksModule } from './resources/tracks/tracks.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './common/users/users.module';
+import { UsersModule } from './resources/users/users.module';
 
 @Module({
   imports: [

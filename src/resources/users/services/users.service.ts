@@ -38,19 +38,22 @@ export class UsersService {
       throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
     }
 
-    if (users[findIndexUser].password === updateUserDto.oldPassword) {
-      users[findIndexUser].password = updateUserDto.newPassword;
-      users[findIndexUser].updatedAt = +Date.now();
-      ++users[findIndexUser].version;
-      const user = await this.findOneById(id);
-      return user;
-    } else {
+    if (users[findIndexUser].password !== updateUserDto.oldPassword)
       throw new HttpException(`oldPassowrd is wrong`, HttpStatus.FORBIDDEN);
-    }
+
+    const user = users[findIndexUser];
+
+    user.password = updateUserDto.newPassword;
+    user.updatedAt = +Date.now();
+    user.version += 1;
+
+    const find_user = await this.findOneById(id);
+    return find_user;
   }
 
   async delete(id: string): Promise<void> {
     await this.findOneById(id);
+
     users = users.filter(function (user) {
       return user.id != id;
     });
