@@ -2,7 +2,9 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:16-alpine As development
+FROM node:16-slim As development
+RUN apt-get update
+RUN apt-get install -y openssl
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -11,6 +13,7 @@ WORKDIR /usr/src/app
 # A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
 # Copying this first prevents re-running npm install on every code change.
 COPY --chown=node:node package*.json ./
+COPY ./prisma prisma
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN npm i

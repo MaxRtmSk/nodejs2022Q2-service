@@ -19,8 +19,11 @@ services:
       - ${PORT}:${PORT}
     depends_on:
       - postgres
+    links:
+      - postgres
 
   postgres:
+    container_name: postgres
     build:
       context: .
       dockerfile: postgres.Dockerfile

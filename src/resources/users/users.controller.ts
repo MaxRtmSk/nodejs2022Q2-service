@@ -25,36 +25,36 @@ export class UsersController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<any[]> {
     return this.usersService.findAll();
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Get(':id')
-  async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
-    return this.usersService.findOneById(id);
-  }
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @Get(':id')
+  // async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
+  //   return this.usersService.findOneById(id);
+  // }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Post('/')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  register(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
-  }
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @Post('/')
+  // @UsePipes(new ValidationPipe({ transform: true }))
+  // register(@Body() createUserDto: CreateUserDto): Promise<User> {
+  //   return this.usersService.create(createUserDto);
+  // }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Put('/:id')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  update(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.update(updateUserDto, id);
-  }
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @Put('/:id')
+  // @UsePipes(new ValidationPipe({ transform: true }))
+  // update(
+  //   @Param('id', new ParseUUIDPipe()) id: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  // ): Promise<User> {
+  //   return this.usersService.update(updateUserDto, id);
+  // }
 
-  @Delete('/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.usersService.delete(id);
-  }
+  // @Delete('/:id')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+  //   return this.usersService.delete(id);
+  // }
 }

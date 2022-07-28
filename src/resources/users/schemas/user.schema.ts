@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 export class User {
   id: string;
   login: string;
@@ -7,8 +7,10 @@ export class User {
   password: string;
 
   version?: number;
-  createdAt?: number;
-  updatedAt?: number;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
