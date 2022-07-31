@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { User } from '../schemas/user.schema';
 // import { User, Prisma } from '@prisma/client';
 
@@ -7,7 +6,6 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateUserDto } from '../dto/createUser.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 
-let users: User[] = [];
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -17,49 +15,37 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<User> {
-    const user = users.find((user) => user.id === id);
-    if (!user) {
-      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
-    }
-    return user;
+    const user = this.prisma.user.findUniqueOrThrow({where:{id}});
+    return new User(user)
   }
 
-  async create(createUserDto: CreateUserDto): Promise<void> {
-    console.log(createUserDto);
-    // const new_user: User = new User({
-    //   id: randomUUID(),
-    //   ...createUserDto,
-    //   version: 1,
-    //   createdAt: +Date.now(),
-    //   updatedAt: +Date.now(),
-    // });
-    // users.push(new_user);
-    // return new_user;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = await this.prisma.user.create({
+      data: {...createUserDto,
+        version: 1, },
+    })
+    
+    return new User(user);
   }
 
   async update(updateUserDto: UpdateUserDto, id: string): Promise<User> {
-    const findIndexUser = users.findIndex((user) => user.id === id);
-    if (findIndexUser < 0) {
-      throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);
-    }
-
-    if (users[findIndexUser].password !== updateUserDto.oldPassword)
+   const user = await this.prisma.user.findUniqueOrThrow({where:{id}}).catch(()=>{throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);});
+ 
+    if (user.password !== updateUserDto.oldPassword)
       throw new HttpException(`oldPassowrd is wrong`, HttpStatus.FORBIDDEN);
 
-    const user = users[findIndexUser];
+    const updated_user = await this.prisma.user.update({where: {id}, data: {
+      password: updateUserDto.newPassword,
+      version: user.version += 1,
+      updatedAt: new Date()
+    }})
 
-    user.password = updateUserDto.newPassword;
-    user.version += 1;
-
-    const find_user = await this.findOneById(id);
-    return find_user;
+    
+    return new User(updated_user);
   }
 
   async delete(id: string): Promise<void> {
-    await this.findOneById(id);
-
-    users = users.filter(function (user) {
-      return user.id != id;
-    });
+    await this.prisma.user.findUniqueOrThrow({where:{id}}).catch(()=>{throw new HttpException(`User ${id} doesn't exist`, HttpStatus.NOT_FOUND);});
+    await this.prisma.user.delete({where: {id}})
   }
 }

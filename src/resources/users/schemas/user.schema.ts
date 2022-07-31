@@ -8,8 +8,10 @@ export class User {
 
   version?: number;
 
+  @Transform(({ value }) => +new Date(value))
   createdAt?: Date;
 
+  @Transform(({ value }) => +value)
   updatedAt?: Date;
 
   constructor(partial: Partial<User>) {
