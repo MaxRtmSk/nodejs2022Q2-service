@@ -8,10 +8,18 @@ export class User {
 
   version?: number;
 
-  @Transform(({ value }) => +new Date(value))
+  @Transform(({ value }) => {
+    let n = +value 
+    const r = n.toString().substring(0, n.toString().length - 1);
+    return +r
+  })
   createdAt?: Date;
 
-  @Transform(({ value }) => +value)
+  @Transform(({ value }) => {
+    let n = +value 
+    const r = n.toString().substring(0, n.toString().length - 1);
+    return +r
+  })
   updatedAt?: Date;
 
   constructor(partial: Partial<User>) {

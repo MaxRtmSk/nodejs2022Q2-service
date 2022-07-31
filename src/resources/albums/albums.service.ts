@@ -1,82 +1,65 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { favorites } from '../favorites/favorites.service';
-import { TracksService } from '../tracks/tracks.service';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { UpdateAlbumDto } from './dto/updateAlbum.dto';
 import { Album } from './schemas/album.schema';
 
-export let albums: Album[] = [];
-
 @Injectable()
 export class AlbumsService {
-  @Inject(TracksService)
-  private tracksService: TracksService;
+  constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Album[]> {
-    return albums;
+    return this.prisma.album.findMany({});
   }
 
   async findOneById(id: string): Promise<Album> {
-    const album = albums.find((album) => album.id === id);
-    if (!album) {
-      throw new HttpException(
-        `Album ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return album;
+    const album = await this.prisma.album.findUniqueOrThrow({where:{id}}).catch(()=> { throw new HttpException(
+      `Album ${id} doesn't exist`,
+      HttpStatus.NOT_FOUND,
+    );});
+
+    return new Album(album);
   }
 
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
-    const new_album = new Album({
-      id: randomUUID(),
-      ...createAlbumDto,
-    });
-    albums.push(new_album);
-    return new_album;
+    const new_album = await this.prisma.album.create({
+      data: {...createAlbumDto },
+    })
+    
+    return new Album(new_album);
   }
 
   async update(updateAlbumDto: UpdateAlbumDto, id: string): Promise<Album> {
-    const findIndexAlbum = albums.findIndex((album) => album.id === id);
-    if (findIndexAlbum < 0) {
-      throw new HttpException(
-        `Album ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    await this.prisma.album.findUniqueOrThrow({where:{id}}).catch(()=>{throw new HttpException(`Album ${id} doesn't exist`, HttpStatus.NOT_FOUND);});
 
-    albums[findIndexAlbum] = {
-      ...albums[findIndexAlbum],
-      ...updateAlbumDto,
-    };
+    const updated_album = await this.prisma.album.update({where: {id}, data: {
+      ...updateAlbumDto
+    }})
 
-    const album = await this.findOneById(id);
-    return album;
+    return new Album(updated_album);
   }
 
   async delete(id: string): Promise<void> {
-    await this.findOneById(id);
-    albums = albums.filter((album) => {
-      return album.id != id;
-    });
+    await this.prisma.album.findUniqueOrThrow({where:{id}}).catch(()=>{throw new HttpException(`Album ${id} doesn't exist`, HttpStatus.NOT_FOUND);});
+    await this.prisma.album.delete({where: {id}})
 
-    favorites.albums = favorites.albums.filter((albumId) => albumId != id);
-    await this.tracksService.removeAlbum(id);
+    // favorites.albums = favorites.albums.filter((albumId) => albumId != id);
+    // await this.tracksService.removeAlbum(id);
   }
 
-  async removeArtist(id: string): Promise<void> {
-    albums = await Promise.all(
-      albums.map(async (album) => {
-        if (album.artistId === id) {
-          return {
-            ...album,
-            artistId: null,
-          };
-        } else {
-          return album;
-        }
-      }),
-    );
-  }
+  // async removeArtist(id: string): Promise<void> {
+  //   albums = await Promise.all(
+  //     albums.map(async (album) => {
+  //       if (album.artistId === id) {
+  //         return {
+  //           ...album,
+  //           artistId: null,
+  //         };
+  //       } else {
+  //         return album;
+  //       }
+  //     }),
+  //   );
+  // }
 }

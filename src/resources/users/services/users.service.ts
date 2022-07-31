@@ -15,7 +15,7 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<User> {
-    const user = this.prisma.user.findUniqueOrThrow({where:{id}});
+    const user = await this.prisma.user.findUniqueOrThrow({where:{id}});
     return new User(user)
   }
 

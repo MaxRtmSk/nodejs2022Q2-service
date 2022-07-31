@@ -2,11 +2,10 @@ import { ArtistsService } from './artists.service';
 import { ArtistsController } from './artists.controller';
 
 import { Module } from '@nestjs/common';
-import { AlbumsModule } from '../albums/albums.module';
-import { TracksModule } from '../tracks/tracks.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [AlbumsModule, TracksModule],
+  imports: [PrismaModule],
   controllers: [ArtistsController],
   providers: [ArtistsService],
   exports: [ArtistsService],

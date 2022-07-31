@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { albums, AlbumsService } from '../albums/albums.service';
+import { AlbumsService } from '../albums/albums.service';
 import { Album } from '../albums/schemas/album.schema';
-import { artists, ArtistsService } from '../artists/artists.service';
+import { ArtistsService } from '../artists/artists.service';
 import { Artist } from '../artists/schemas/artist.schema';
 import { Track } from '../tracks/schemas/track.schema';
 import { tracks, TracksService } from '../tracks/tracks.service';
@@ -80,13 +80,13 @@ export class FavoritesService {
   }
 
   async addArtist(id: string): Promise<void> {
-    const artist = artists.find((artist) => artist.id === id);
-    if (!artist) {
-      throw new HttpException(
-        `Artist doesn't exists`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+    // const artist = artists.find((artist) => artist.id === id);
+    // if (!artist) {
+    //   throw new HttpException(
+    //     `Artist doesn't exists`,
+    //     HttpStatus.UNPROCESSABLE_ENTITY,
+    //   );
+    // }
     favorites.artists.push(id);
   }
 
@@ -101,13 +101,13 @@ export class FavoritesService {
   }
 
   async addAlbum(id: string): Promise<void> {
-    const album = albums.find((album) => album.id === id);
-    if (!album) {
-      throw new HttpException(
-        `Album doesn't exists`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+    // const album = albums.find((album) => album.id === id);
+    // if (!album) {
+    //   throw new HttpException(
+    //     `Album doesn't exists`,
+    //     HttpStatus.UNPROCESSABLE_ENTITY,
+    //   );
+    // }
     favorites.albums.push(id);
   }
 
