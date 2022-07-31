@@ -27,6 +27,7 @@ model Artist {
 
   albums Album[]
   tracks Track[]
+  favorites Favorites[]
 }
 
 model Album {
@@ -38,6 +39,7 @@ model Album {
   artistId String? @db.Uuid
 
   tracks Track[]
+  favorites Favorites[]
 }
 
 
@@ -52,4 +54,21 @@ model Track {
   albumId String? @db.Uuid
 
   duration Int
+
+  favorites Favorites[]
+}
+
+model Favorites {
+  id Int @id @default(autoincrement())
+
+  userId String
+
+  artist   Artist? @relation(fields: [artistId], onDelete: SetNull, references: [id])
+  artistId String? @db.Uuid
+
+  album Album? @relation(fields: [albumId], onDelete: SetNull, references: [id])
+  albumId String? @db.Uuid
+
+  track Track? @relation(fields: [trackId], onDelete: SetNull, references: [id])
+  trackId String? @db.Uuid
 }
