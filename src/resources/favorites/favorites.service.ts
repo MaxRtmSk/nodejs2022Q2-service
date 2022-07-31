@@ -19,10 +19,10 @@ export class FavoritesService {
     const artists = await this.prisma.$queryRaw<Artist[]>(
       Prisma.sql`select * from "Artist" a  where id in (SELECT "artistId" from "Favorites" where "userId" = '1');`
     )
-    const albums = await this.prisma.$queryRaw<Album[]>(
+    const tracks = await this.prisma.$queryRaw<Track[]>(
       Prisma.sql`select * from "Track" a  where id in (SELECT "trackId" from "Favorites" where "userId" = '1');`
     )
-    const tracks = await this.prisma.$queryRaw<Track[]>(
+    const albums = await this.prisma.$queryRaw<Album[]>(
       Prisma.sql`select * from "Album" a  where id in (SELECT "albumId" from "Favorites" where "userId" = '1');`
     )
 
