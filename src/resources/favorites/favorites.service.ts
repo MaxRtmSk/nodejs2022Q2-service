@@ -1,10 +1,7 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AlbumsService } from '../albums/albums.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Album } from '../albums/schemas/album.schema';
-import { ArtistsService } from '../artists/artists.service';
 import { Artist } from '../artists/schemas/artist.schema';
 import { Track } from '../tracks/schemas/track.schema';
-import { tracks, TracksService } from '../tracks/tracks.service';
 
 export const favorites = {
   artists: [],
@@ -20,50 +17,46 @@ interface FavoritesRepsonse {
 
 @Injectable()
 export class FavoritesService {
-  @Inject(TracksService)
-  private readonly tracksService: TracksService;
-  @Inject(AlbumsService)
-  private readonly albumsService: AlbumsService;
-  @Inject(ArtistsService)
-  private readonly artistsService: ArtistsService;
 
   async getFavorites(): Promise<FavoritesRepsonse> {
-    const artists = await Promise.all(
-      favorites.artists.map(async (artistId) => {
-        const artist = await this.artistsService.findOneById(artistId);
-        return artist;
-      }),
-    );
+    // const artists = await Promise.all(
+    //   favorites.artists.map(async (artistId) => {
+    //     const artist = await this.artistsService.findOneById(artistId);
+    //     return artist;
+    //   }),
+    // );
 
-    const albums = await Promise.all(
-      favorites.albums.map(async (albumId) => {
-        const album = await this.albumsService.findOneById(albumId);
-        return album;
-      }),
-    );
+    // const albums = await Promise.all(
+    //   favorites.albums.map(async (albumId) => {
+    //     const album = await this.albumsService.findOneById(albumId);
+    //     return album;
+    //   }),
+    // );
 
-    const tracks = await Promise.all(
-      favorites.tracks.map(async (trackId) => {
-        const track = await this.tracksService.findOneById(trackId);
-        return track;
-      }),
-    );
+    // const tracks = await Promise.all(
+    //   favorites.tracks.map(async (trackId) => {
+    //     const track = await this.tracksService.findOneById(trackId);
+    //     return track;
+    //   }),
+    // );
 
-    return {
-      artists,
-      albums,
-      tracks,
-    };
+    // return {
+    //   artists,
+    //   albums,
+    //   tracks,
+    // };
+
+    return favorites
   }
 
   async addTrack(id: string): Promise<void> {
-    const track = tracks.find((track) => track.id === id);
-    if (!track) {
-      throw new HttpException(
-        `Track doesn't exists`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+    // const track = tracks.find((track) => track.id === id);
+    // if (!track) {
+    //   throw new HttpException(
+    //     `Track doesn't exists`,
+    //     HttpStatus.UNPROCESSABLE_ENTITY,
+    //   );
+    // }
     favorites.tracks.push(id);
   }
 
