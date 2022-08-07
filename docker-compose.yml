@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     networks:
-      - backend
+      - back
     restart: always
     # Run a command against the development stage of the image
     command: npm run start:dev
@@ -36,7 +36,7 @@ services:
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
-      - backend
+      - back
     volumes:
       - postgresdata:/var/lib/postgresql/data
 
@@ -44,5 +44,5 @@ volumes:
   postgresdata:
 
 networks:
-  backend:
+  back:
     driver: bridge
